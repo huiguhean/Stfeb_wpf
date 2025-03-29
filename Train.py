@@ -95,7 +95,6 @@ class STMAML(nn.Module):
                         target_dataloader.batch_size) + 'pred_num' + str(
                     self.task_args['pred_num']) + '_finetuning_epoch_' + str(bestid) + '_' + str(
                     round(min_MAE, 2)) + '.pth'):
-                    # 删除之前的最佳模型
                     os.remove('save/' + str(self.model_name) + str(self.model_args['update_lr']) + '_bs_' + str(
                         target_dataloader.batch_size) + 'pred_num' + str(
                         self.task_args['pred_num']) + '_finetuning_epoch_' + str(bestid) + '_' + str(
