@@ -24,8 +24,6 @@ class traffic_dataset(Dataset):
         self.load_data(stage, test_data)
 
     def load_data(self, stage, test_data):
-        self.A_list, self.edge_index_list = {}, {}
-        self.edge_attr_list, self.node_feature_list = {}, {}
         self.x_list, self.y_list = {}, {}
         self.means_list, self.stds_list = {}, {}
 

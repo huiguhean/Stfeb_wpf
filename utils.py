@@ -19,8 +19,6 @@ def metric_func(pred, y, times):
     result['MSE'], result['RMSE'], result['MAE'], result['MAPE'] = np.zeros(times), np.zeros(times), np.zeros(
         times), np.zeros(times)
 
-    # print("metric | pred shape:", pred.shape, " y shape:", y.shape)
-
     def cal_MAPE(pred, y):
         diff = np.abs(np.array(y) - np.array(pred))
         return np.mean(diff / y)
