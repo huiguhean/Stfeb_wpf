@@ -208,7 +208,6 @@ class STFEB_WPF(nn.Module):
         memory_dict = nn.ParameterDict()
         memory_dict['Memory'] = nn.Parameter(torch.randn(self.mem_num, self.mem_dim),
                                              requires_grad=True)  # (M, d)[20,40]
-        # nn.init.xavier_normal_(memory_dict['Memory'])  # 对 Memory 进行 Xavier 初始化
         memory_dict['Wq'] = nn.Parameter(torch.randn(self.model_dim - self.mem_dim, self.mem_dim),
                                          requires_grad=True)  # project to query[64,64]  main01
 
@@ -218,9 +217,9 @@ class STFEB_WPF(nn.Module):
 
     def query_memory(self, h_t: torch.Tensor):
         query = torch.matmul(h_t, self.memory['Wq'])  # (B, N, d)
-        query_norm = F.normalize(query, p=2, dim=-1)  # 临时变量
-        memory_norm = F.normalize(self.memory['Memory'], p=2, dim=-1)  # 临时变量
-        att_score = torch.matmul(query_norm, memory_norm.t()) / self.temperature  # 余弦相似度 # 温度系数
+        query_norm = F.normalize(query, p=2, dim=-1)
+        memory_norm = F.normalize(self.memory['Memory'], p=2, dim=-1)
+        att_score = torch.matmul(query_norm, memory_norm.t()) / self.temperature
         att_score = torch.softmax(att_score, dim=-1)
         _, topk_indices = torch.topk(att_score, k=self.mem_num // 4, dim=-1)  # (B, N, mem_num // 2)
         mask = torch.zeros_like(att_score)  # (B, N, M)
@@ -267,7 +266,6 @@ class STFEB_WPF(nn.Module):
 
         if self.spatial_embedding_dim > 0:
             node_emb = self.node_emb
-            # 扩展到符合batch和历史输入步数的形状
             spatial_emb = node_emb.expand(
                 batch_size, self.in_steps, *node_emb.shape
             )
@@ -302,5 +300,4 @@ class STFEB_WPF(nn.Module):
                 out.transpose(1, 3)
             )  # (batch_size, out_steps, num_nodes, output_dim)
         out = out.squeeze(-1)
-        return out.permute(0, 2, 1), query, pos, neg#out X:[batchsize, nodenum, predLong]
-
+        return out.permute(0, 2, 1), query, pos, neg  # out X:[batchsize, nodenum, predLong]
