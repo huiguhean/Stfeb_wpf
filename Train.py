@@ -58,7 +58,7 @@ class STMAML(nn.Module):
             for step, data in enumerate(target_dataloader):
                 x = data.x.to(device=device)
                 y = data.y.to(device=device)
-                out, query, pos, neg = maml_model(x)
+                out, query, pos, neg = maml_model(x)#out shape:[batchsize, nodenum, predLong]
                 out = scaler.inverse_transform(out)
 
                 loss = self.loss_criterion(out, y)

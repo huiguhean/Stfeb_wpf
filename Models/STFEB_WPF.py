@@ -235,6 +235,7 @@ class STFEB_WPF(nn.Module):
         return value, query, pos, neg  # 64,207,64
 
     def forward(self, x):
+        # input X :[batchsize, nodenum, history, dims]
         x = x.permute(0, 2, 1, 3)
         batch_size = x.shape[0]
 
@@ -301,5 +302,5 @@ class STFEB_WPF(nn.Module):
                 out.transpose(1, 3)
             )  # (batch_size, out_steps, num_nodes, output_dim)
         out = out.squeeze(-1)
-        return out.permute(0, 2, 1), query, pos, neg
+        return out.permute(0, 2, 1), query, pos, neg#out X:[batchsize, nodenum, predLong]
 
