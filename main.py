@@ -6,8 +6,6 @@ import argparse
 import yaml
 import time
 from maml_Mega import STMAML
-# from Train_OtherModels import STMAML
-# from Train_visable import STMAML
 from data_provider.normalization import StandardScaler
 import os
 
@@ -85,7 +83,6 @@ if __name__ == '__main__':
     _, target_mean, _, target_std = target_dataset.get_maml_task_batch()
     target_mean = torch.from_numpy(target_mean).to(args.device)
     target_std = torch.from_numpy(target_std).to(args.device)
-    # scaler = StandardScaler(target_mean[6], target_std[6])
     scaler = StandardScaler(target_mean, target_std)
 
     model.finetuning(target_dataloader, valid_dataloader, test_dataloader, args.target_epochs, scaler,args.device)  # , args.test_dataset)

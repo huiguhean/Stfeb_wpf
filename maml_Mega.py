@@ -20,9 +20,6 @@ def loss_fn(y_pred, y_true, mask_value=None):
 
 
 class STMAML(nn.Module):
-    """
-    MAML-based Few-shot learning architecture for STGNN
-    """
 
     def __init__(self, data_args, task_args, model_args, model='GRU', device='cuda:0'):
         super(STMAML, self).__init__()
