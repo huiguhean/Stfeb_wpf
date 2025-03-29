@@ -118,8 +118,8 @@ class STFEB_WPF(nn.Module):
             input_dim=10,
             output_dim=1,
             input_embedding_dim=24,
-            tod_embedding_dim=12,  # time of day
-            doy_embedding_dim=24,  # day of year
+            tod_embedding_dim=12,
+            doy_embedding_dim=24,
             moy_embedding_dim=12,
             spatial_embedding_dim=40,
             adaptive_embedding_dim=0,
