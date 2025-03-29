@@ -5,9 +5,7 @@ from utils import *
 import argparse
 import yaml
 import time
-from maml_Mega import STMAML
-# from Train_OtherModels import STMAML
-# from Train_visable import STMAML
+from Train import STMAML
 from data_provider.normalization import StandardScaler
 import os
 
@@ -33,6 +31,7 @@ parser.add_argument('--batch_size', default=128, type=int)
 parser.add_argument('--Train_ratio', default=0.6, type=int)
 parser.add_argument('--model', default='STFEB_WPF', type=str,
                     help='TransformerEnOnly,MLP,CNN_LSTM,AGCRN,STAEformer，model2D， ASFB_TFB,')
+# parser.add_argument('--loss_lambda', default=1.5, type=float)
 parser.add_argument('--memo', default='revise', type=str)
 args = parser.parse_args()
 
@@ -54,10 +53,6 @@ if __name__ == '__main__':
     task_args['batch_size'] = args.batch_size
 
     model = STMAML(data_args, task_args, model_args, model=args.model, device=args.device).to(device=args.device)
-
-    source_training_losses, target_training_losses = [], []
-    best_result = ''
-    min_MAE = 10000000
     print(args)
 
     target_dataset = traffic_dataset(data_args, task_args, "target", test_data=args.test_dataset,
@@ -85,10 +80,9 @@ if __name__ == '__main__':
     _, target_mean, _, target_std = target_dataset.get_maml_task_batch()
     target_mean = torch.from_numpy(target_mean).to(args.device)
     target_std = torch.from_numpy(target_std).to(args.device)
-    # scaler = StandardScaler(target_mean[6], target_std[6])
     scaler = StandardScaler(target_mean, target_std)
 
-    model.finetuning(target_dataloader, valid_dataloader, test_dataloader, args.target_epochs, scaler,args.device)  # , args.test_dataset)
+    model.finetuning(target_dataloader, valid_dataloader, test_dataloader, args.target_epochs, scaler, args.device)  # , args.test_dataset)
 
     print(args.memo)
     print(time.strftime('%Y-%m-%d %H:%M:%S'), "Train_ratio = ", args.Train_ratio)

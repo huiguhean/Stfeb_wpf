@@ -113,13 +113,13 @@ class STFEB_WPF(nn.Module):
             self,
             num_nodes=134,
             in_steps=36,
-            out_steps=24,
+            out_steps=12,
             steps_per_day=144,
             input_dim=10,
             output_dim=1,
             input_embedding_dim=24,
-            tod_embedding_dim=12,  # time of day
-            doy_embedding_dim=24,  # day of year
+            tod_embedding_dim=12,
+            doy_embedding_dim=24,
             moy_embedding_dim=12,
             spatial_embedding_dim=40,
             adaptive_embedding_dim=0,
@@ -218,34 +218,23 @@ class STFEB_WPF(nn.Module):
 
     def query_memory(self, h_t: torch.Tensor):
         query = torch.matmul(h_t, self.memory['Wq'])  # (B, N, d)
-        # query = h_t
         query_norm = F.normalize(query, p=2, dim=-1)  # 临时变量
         memory_norm = F.normalize(self.memory['Memory'], p=2, dim=-1)  # 临时变量
         att_score = torch.matmul(query_norm, memory_norm.t()) / self.temperature  # 余弦相似度 # 温度系数
         att_score = torch.softmax(att_score, dim=-1)
-        # att_score = torch.softmax (torch.matmul(query, self.memory['Memory'].t()), dim=-1)  # (B, N, M)
-        # 使用 topk 选择前一半的库特征
         _, topk_indices = torch.topk(att_score, k=self.mem_num // 4, dim=-1)  # (B, N, mem_num // 2)
-        # 创建一个全零的 mask 矩阵
         mask = torch.zeros_like(att_score)  # (B, N, M)
-        # 将 topk 的位置设置为 1
         mask.scatter_(-1, topk_indices, 1.0)  # (B, N, M)
-        # 应用 mask 到注意力得分
         att_score = att_score * mask  # (B, N, M)
-        # 归一化注意力得分（确保每一行的和为 1）
         # att_score = torch.softmax(att_score, dim=-1)  # (B, N, M)
         att_score = att_score / (att_score.sum(dim=-1, keepdim=True) + 1e-8)
-        # att_score = torch.softmax(torch.matmul(query, self.memory['Memory'].t()), dim=-1)         # alpha: (B, N, M)
         value = torch.matmul(att_score, self.memory['Memory'])  # (B, N, d)
-        # value = torch.matmul(value, self.memory['Wq'])  # (B, N, d)
         _, ind = torch.topk(att_score, k=2, dim=-1)
         pos = self.memory['Memory'][ind[..., 0]]  # B, N, d
         neg = self.memory['Memory'][ind[..., 1]]  # B, N, d
         return value, query, pos, neg  # 64,207,64
 
     def forward(self, x):
-        # x: (batch_size, in_steps, num_nodes, input_dim+tod+dow=3)
-        # x = x[:,:,:,6:]
         x = x.permute(0, 2, 1, 3)
         batch_size = x.shape[0]
 
@@ -312,6 +301,5 @@ class STFEB_WPF(nn.Module):
                 out.transpose(1, 3)
             )  # (batch_size, out_steps, num_nodes, output_dim)
         out = out.squeeze(-1)
-        # query, pos, neg=1,1,1
         return out.permute(0, 2, 1), query, pos, neg
 
