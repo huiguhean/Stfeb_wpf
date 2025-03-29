@@ -1,0 +1,16 @@
+data:
+  data_keys: ['MyData','SDWPF134']
+
+  MyData:
+    dataset_path: data/MyData/wpData.npz
+  SDWPF134:
+    dataset_path: data/SDWPF/wtbdata_245days.npz
+  
+task:
+  his_num: 36
+  pred_num: 24
+  batch_size: 256
+  test_batch_size: 256
+
+model:
+  update_lr: 0.01
