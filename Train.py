@@ -30,7 +30,6 @@ class STMAML(nn.Module):
         self.model_name = model
 
         if model == 'STFEB_WPF':
-            # Meta-GRU
             self.model = STFEB_WPF()
             print("MAML Model: STFEB_WPF")
         self.model.to(device)
@@ -42,16 +41,12 @@ class STMAML(nn.Module):
         return out, meta_graph
 
     def finetuning(self, target_dataloader, valid_dataloader, test_dataloader, target_epochs, scaler, device):
-        """
-        finetunning stage in MAML
-        """
         maml_model = deepcopy(self.model)
         optimizer = optim.AdamW(maml_model.parameters(), lr=self.update_lr, weight_decay=10 * 1e-4)
         min_MAE = 10000000
         bestid = 1
         patience = 0
         lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.9)
-        # 用于存储每个 epoch 的训练和验证损失
         vi_train_losses = []
         vi_valid_losses = []
         for epoch in tqdm(range(target_epochs)):
@@ -141,7 +136,6 @@ class STMAML(nn.Module):
         maml_model.eval()
         with torch.no_grad():
             test_start = time.time()
-            # maml_model.eval()
             outputs, realy = [], []
             test_result = pd.DataFrame(columns=['Horizon', 'MAE', 'RMSE', 'MAPE'])
             for step, data in enumerate(test_dataloader):
