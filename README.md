@@ -1,4 +1,4 @@
-# Spatiotemporal Transformer Wind Power Forecasting with Feature Embedding and Feature Bank Matching
+# Spatiotemporal Feature Embedding and Bank Matching: An Efficient Solution for Wind Power Forecasting
 
 This is the pytorch implementation of the paper: Spatiotemporal Transformer Wind Power Forecasting
  with Feature Embedding and Feature Bank Matching
