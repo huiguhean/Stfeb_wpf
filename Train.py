@@ -71,9 +71,7 @@ class STMAML(nn.Module):
                 loss1.backward()
                 optimizer.step()
                 train_losses.append(loss.item())
-                train_losses1.append(loss1.item() - loss.item())
             avg_train_loss = np.mean(train_losses)  # sum(train_losses)/len(train_losses)
-            avg_train_loss1 = np.mean(train_losses1)
             vi_train_losses.append(avg_train_loss)
 
             maml_model.eval()
@@ -113,18 +111,14 @@ class STMAML(nn.Module):
                     break
             end_time = time.time()
             if epoch % 10 == 0 or epoch < 50:
-                print("epoch #{}/{}: loss: {}, Bank loss:{}, avg_valid_loss: {},patience:{}, time={}S".format(epoch + 1,
+                print("epoch #{}/{}: loss: {}, avg_valid_loss: {}, time={}S".format(epoch + 1,
                                                                                                               target_epochs,
                                                                                                               round(
                                                                                                                   avg_train_loss,
                                                                                                                   2),
                                                                                                               round(
-                                                                                                                  avg_train_loss1,
-                                                                                                                  5),
-                                                                                                              round(
                                                                                                                   avg_valid_loss,
                                                                                                                   2),
-                                                                                                              patience,
                                                                                                               start_time - end_time))
         maml_model.load_state_dict(
             torch.load('save/' + str(self.model_name) + str(self.model_args['update_lr']) + '_bs_' + str(
